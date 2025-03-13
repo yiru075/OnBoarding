@@ -1,0 +1,64 @@
+.home {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    padding: 80px 100px;
+    background-color: white;
+    max-width: 1200px;
+    margin: 0 auto; 
+}
+  
+  
+  .home-content {
+    flex: 1; 
+    max-width: 50%;
+  }
+  
+  .home-content h1 {
+    font-size: 36px;
+    font-weight: bold;
+    color: black;
+  }
+  
+  .home-content h2 {
+    font-size: 28px;
+    font-weight: bold;
+    color: orange;
+    margin-bottom: 15px;
+  }
+  
+  .home-content p {
+    font-size: 16px;
+    color: #333;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+  
+  .cta-button {
+    background-color: orange;
+    color: white;
+    padding: 12px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+  }
+  
+
+  .home-image {
+    flex: 1; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    max-width: 50%;
+  }
+  
+  .home-image img {
+    width: 100%; 
+    max-width: 400px;
+    border-radius: 10px;
+    position: relative;
+    z-index: 2;
+  }
+
+

@@ -6,13 +6,9 @@ import { Link } from "react-router-dom"
 const Header = () => {
   return (
     <header className="header">
-      {/* <div className="header-logo">
-        <img
-          src="https://via.placeholder.com/120x40?text=Logo"
-          alt="Logo"
-          className="logo-img"
-        />
-      </div> */}
+      <div className="logo">
+        <span>UV</span> Index Alert
+      </div>
 
       <nav className="header-nav">
         <ul>
