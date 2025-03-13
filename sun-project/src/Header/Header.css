@@ -1,0 +1,32 @@
+.header {
+  position: fixed;
+  top: 0;              
+  width: 100%;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
+  padding: 0 20px;
+  background-color: #f0d16e;
+  box-sizing: border-box;
+  border-bottom: 1px solid #ccc;
+}
+
+
+.header-logo .logo-img {
+  height: 40px; 
+}
+
+
+.header-nav ul {
+  list-style: none;
+  display: flex;
+  gap: 20px;    
+  padding: 0;
+}
+
+.header-nav li {
+  cursor: pointer;
+  font-weight: 500;
+}
