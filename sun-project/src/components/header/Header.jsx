@@ -14,9 +14,9 @@ const Header = () => {
         <ul>
           <li><Link to="/">Home</Link></li>
           <li><Link to="/uv-levels">UV Levels</Link></li>
-          <li><Link to="/personalized-plan">Personalized Sun Safety Plan</Link></li>
-          <li><Link to="/sunscreen-reminder">Sun Screen Reminder</Link></li>
-          <li><Link to="/sun-safe-clothing">Advice for Clothing</Link></li>
+          <li><Link to="/personalized-plan">Personalized Plan</Link></li>
+          <li><Link to="/sunscreen-reminder">Sunscreen Reminder</Link></li>
+          <li><Link to="/sun-safe-clothing">Advice</Link></li>
         </ul>
       </nav>
     </header>

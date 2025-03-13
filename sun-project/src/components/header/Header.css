@@ -26,7 +26,7 @@
 
 
 .header-nav {
-  flex: 6; 
+  flex: 1; 
   display: flex;
   justify-content: center; 
 }

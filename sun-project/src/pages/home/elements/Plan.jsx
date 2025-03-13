@@ -1,7 +1,7 @@
 import React from "react";
 import "./Plan.css"; 
 import { FaCheckCircle } from "react-icons/fa"; 
-import planImage from "../assets/picture/sunglasses.jpg"; 
+import planImage from "../../../assets/picture/sunglasses.jpg"; 
 
 const Plan = () => {
   return (

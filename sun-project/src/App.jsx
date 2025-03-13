@@ -1,12 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Footer from './Footer/Footer'; 
-import Header from './Header/Header';
-import Home from './Home/Home';
-import UVLevels from './UVLevels/UVLevels';
-import PersonalizedPlan from './PersonalizedPlan/PersonalizedPlan';
-import SunscreenReminder from './SunscreenReminder/SunscreenReminder';
-import SunSafeClothing from './SunSafeClothing/SunSafeClothing';
+import Footer from './components/footer/Footer'; 
+import Header from './components/header/Header';
+import Home from './pages/home/Home';
+import UVLevels from './pages/UV_levels/UVLevels';
+import PersonalizedPlan from './pages/personalized_plan/PersonalizedPlan';
+import SunscreenReminder from './pages/sunscreen_reminder/SunscreenReminder';
+import SunSafeClothing from './pages/sun_safe_clothing/SunSafeClothing';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; 
 

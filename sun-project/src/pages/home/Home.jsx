@@ -1,9 +1,9 @@
 import './Home.css'
 import React from 'react'
-import homeImage from '../assets/picture/home_image.jpg'
-import Features from '../components/Features.jsx'
-import Heatmap from '../components/Heatmap.jsx'
-import Plan from '../components/Plan.jsx'
+import homeImage from '../../assets/picture/home_image.jpg'
+import Features from './elements/Features.jsx'
+import Heatmap from './elements/Heatmap.jsx'
+import Plan from './elements/Plan.jsx'
 
 const Home = () => {
   return (
