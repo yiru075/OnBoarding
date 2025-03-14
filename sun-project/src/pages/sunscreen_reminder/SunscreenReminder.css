@@ -1,0 +1,101 @@
+.reminder-container {
+  text-align: center;
+  padding: 100px 200px 100px 250px;
+  max-width: 1000px;
+  margin: auto;
+  font-family: Arial, sans-serif;
+}
+
+.reminder-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: orange;
+}
+
+.reminder-container h1 {
+  font-size: 36px;
+  font-weight: bold;
+  color: black;
+}
+
+.uv-info {
+  font-size: 20px;
+  color: #444;
+}
+
+
+.reminder-highlight {
+  font-size: 28px;
+  font-weight: bold;
+  color: orange;
+}
+
+.reminder-text {
+  font-size: 16px;
+  color: #333;
+  margin: 10px 0;
+}
+
+.countdown {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+  margin: 15px auto;
+  width: 250px;
+}
+
+.countdown-timer {
+  font-weight: bold;
+  color: green;
+}
+
+.reminder-label {
+  font-size: 18px;
+  font-weight: 500;
+  display: block;
+  margin-top: 15px;
+}
+
+.reminder-select {
+  padding: 5px;
+  font-size: 16px;
+}
+
+.reminder-button {
+  background-color: green;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 10px;
+  border-radius: 5px;
+}
+
+.tips-section {
+  background: #f3f3f3;
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 8px;
+}
+
+.tips-section h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.tips-section ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.tips-section li {
+  font-size: 16px;
+  padding: 5px 0;
+}
+
+.footer {
+  font-size: 14px;
+  color: #777;
+  margin-top: 20px;
+}
