@@ -8,6 +8,7 @@ const { Option } = Select;
 const API_KEY = "65bc8111f58a6ebc65a227d27aa0fdb9";
 const BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
 const BASE_UVI_URL = "https://api.openweathermap.org/data/3.0/onecall";
+const LAMBDA_API_URL = "https://106iftrk39.execute-api.ap-southeast-2.amazonaws.com/getweatheruv"; 
 
 const cities = [
   { name: "Sydney", lat: 33.8688, lon: 151.2093 },
@@ -26,30 +27,64 @@ const UVLevels = () => {
   const [uvi, setUvi] = useState(null);
 
   // Get current location information
+  // useEffect(() => {
+  //   if (navigator.geolocation) {
+  //     navigator.geolocation.getCurrentPosition(async (position) => {
+  //       const { latitude, longitude } = position.coords;
+  //       fetchWeather(latitude, longitude);
+  //       fetchUvi(latitude, longitude);
+  //     }, (error) => {
+  //       message.error("Unable to retrieve location information, please check permissions");
+  //     });
+  //   } else {
+  //     message.error("Browser does not support geolocation services");
+  //   }
+  // }, []);
+
+  // Fetch weather data
+  // const fetchWeather = async (lat, lon) => {
+  //   try {
+  //     const response = await fetch(`${BASE_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
+  //     const data = await response.json();
+  //     setWeatherData(data);
+  //   } catch (error) {
+  //     message.error("Failed to fetch weather data");
+  //   }
+  // };
+
+  const fetchWeatherAndUvi = async (lat, lon) => {
+    try {
+      const response = await fetch(`${LAMBDA_API_URL}?lat=${lat}&lon=${lon}`);
+      const data = await response.json();
+      
+      if (data.uvi) {
+        setWeatherData(data);
+        if (data.uvi=== "No data") {
+          setUvi(0.0)
+        }else{
+          setUvi(data.uvi);
+        }
+      } else {
+        message.error("Failed to retrieve data from API.");
+      }
+    } catch (error) {
+      message.error("Failed to fetch data from AWS Lambda.");
+    }
+  };
+
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(async (position) => {
         const { latitude, longitude } = position.coords;
-        fetchWeather(latitude, longitude);
-        fetchUvi(latitude, longitude);
-      }, (error) => {
-        message.error("Unable to retrieve location information, please check permissions");
+        fetchWeatherAndUvi(latitude, longitude);
+      }, () => {
+        message.error("Unable to retrieve location. Please check permissions.");
       });
     } else {
-      message.error("Browser does not support geolocation services");
+      message.error("Browser does not support geolocation.");
     }
   }, []);
-
-  // Fetch weather data
-  const fetchWeather = async (lat, lon) => {
-    try {
-      const response = await fetch(`${BASE_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
-      const data = await response.json();
-      setWeatherData(data);
-    } catch (error) {
-      message.error("Failed to fetch weather data");
-    }
-  };
+  
 
   // Fetch UVI data
   const fetchUvi = async (lat, lon) => {
@@ -64,13 +99,32 @@ const UVLevels = () => {
 
 
   // Fetch UVI data when a city is selected
+  // const handleCityChange = (value) => {
+  //   const city = cities.find(city => city.name === value);
+  //   if (city) {
+  //     setSelectedCity(city);
+  //     fetchUvi(city.lat, city.lon);
+  //   }
+  // };
+
   const handleCityChange = (value) => {
     const city = cities.find(city => city.name === value);
     if (city) {
       setSelectedCity(city);
-      fetchUvi(city.lat, city.lon);
+      fetchWeatherAndUvi(city.lat, city.lon);
     }
   };
+  
+
+  const getUvLevelColor = (uvi) => {
+    if (uvi === null) return "gray";
+    if (uvi < 3) return "green"; 
+    if (uvi < 6) return "yellow"; 
+    if (uvi < 8) return "orange"; 
+    if (uvi < 11) return "red"; 
+    return "purple"; 
+  };
+  
 
   return (
     <div style={{ padding: 20, textAlign: "center" }}>
@@ -78,13 +132,13 @@ const UVLevels = () => {
       {weatherData && (
         <Card style={{ width: 300, margin: "0 auto" }}>
           <Title level={4}>{weatherData.name}</Title>
-          <p>Temperature: {weatherData.main.temp}°C</p >
-          <p>Humidity: {weatherData.main.humidity}%</p >
-          <p>Weather: {weatherData.weather[0].description}</p >
+          <p>Temperature: {weatherData.temperature}</p >
+          <p>Humidity: {weatherData.humidity}</p >
+          <p>Weather: {weatherData.weather}</p >
           <p>UVI Index: {uvi}</p >
           <Image
             width={80}
-            src={`https://openweathermap.org/img/w/${weatherData.weather[0].icon}.png`}
+            src={weatherData.icon}
             alt="weather icon"
           />
         </Card>
