@@ -1,0 +1,170 @@
+@media (max-width: 576px) {
+    .weather-card .ant-card-body {
+      padding: 12px !important;
+    }
+    
+    .weather-info p {
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    .timer-container {
+      padding: 10px !important;
+    }
+  }
+
+/* UV Levels页面响应式样式 */
+.uv-levels-container {
+  padding: 20px;
+  width: 100%;
+  margin: 0;
+  background-color: #ffffff;
+  padding-top: 80px;
+  min-height: calc(100vh - 64px - 50px); /* 减去header和footer的高度 */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.uv-content-wrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 超大屏幕设备 - 4K显示器 */
+@media (min-width: 2560px) {
+  .uv-content-wrapper {
+    max-width: 1800px;
+  }
+}
+
+/* 大屏幕设备 - 1080p和2K显示器 */
+@media (min-width: 1920px) and (max-width: 2559px) {
+  .uv-content-wrapper {
+    max-width: 1600px;
+  }
+}
+
+/* 较大屏幕设备 */
+@media (min-width: 1440px) and (max-width: 1919px) {
+  .uv-content-wrapper {
+    max-width: 1350px;
+  }
+}
+
+/* 标准大屏幕设备 */
+@media (min-width: 1200px) and (max-width: 1439px) {
+  .uv-content-wrapper {
+    max-width: 1150px;
+  }
+}
+
+/* 中等屏幕设备 */
+@media (max-width: 1199px) and (min-width: 768px) {
+  .uv-content-wrapper {
+    max-width: 90%;
+  }
+}
+
+/* 平板设备 */
+@media (max-width: 767px) and (min-width: 576px) {
+  .uv-levels-container {
+    padding: 15px;
+    padding-top: 70px;
+  }
+  
+  .uv-content-wrapper {
+    max-width: 95%;
+  }
+}
+
+/* 手机设备 */
+@media (max-width: 575px) {
+  .uv-levels-container {
+    padding: 10px;
+    padding-top: 60px;
+  }
+  
+  .uv-content-wrapper {
+    max-width: 100%;
+    padding: 0 5px;
+  }
+}
+
+/* 卡片样式优化 - 超大屏幕 */
+@media (min-width: 1440px) {
+  .weather-card, .city-card {
+    max-width: 95%;
+    margin: 0 auto;
+  }
+  
+  .timer-container {
+    max-width: 85%;
+  }
+  
+  /* 增大字体大小，适应超大屏幕 */
+  .weather-info p {
+    font-size: 18px;
+  }
+  
+  .uv-levels-container .ant-typography {
+    font-size: 110%;
+  }
+}
+
+/* 卡片样式响应式调整 */
+@media (max-width: 767px) {
+  .weather-card .ant-card-body {
+    padding: 15px 10px;
+  }
+  
+  /* 在小屏幕上减小页面标题的字体大小 */
+  .uv-levels-container .ant-typography {
+    font-size: 90%;
+  }
+}
+
+/* 计时器容器样式 */
+.timer-container {
+  margin: 25px auto;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 20px;
+  background-color: #fafafa;
+  max-width: 90%;
+}
+
+/* 响应式卡片样式 */
+.weather-card, .city-card {
+  transition: all 0.3s ease;
+}
+
+/* 响应式调整 - 平板和手机设备 */
+@media (max-width: 767px) {
+  .timer-container {
+    padding: 15px 10px;
+    max-width: 100%;
+  }
+  
+  .weather-card .ant-typography,
+  .city-card .ant-typography {
+    margin-bottom: 15px !important;
+  }
+}
+
+/* 手机设备 - 更小的间距 */
+@media (max-width: 575px) {
+  .timer-container {
+    padding: 10px 5px;
+    margin: 15px auto;
+    border-radius: 8px;
+  }
+  
+  .uv-levels-container .ant-progress-circle {
+    width: 100px !important;
+    height: 100px !important;
+  }
+}

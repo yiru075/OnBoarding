@@ -1,6 +1,7 @@
 import './UVLevels'
+import './UVLevels.css'
 import React, { useEffect, useState, useRef } from "react";
-import { Select, Card, Typography, Image, message, Button, Progress } from "antd";
+import { Select, Card, Typography, Image, message, Button, Progress, Row, Col } from "antd";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -319,90 +320,182 @@ const UVLevels = () => {
 
   // Component rendering section
   return (
-    <div style={{ padding: 20, textAlign: "center" }}>
-      {/* Notification container for displaying reminders and warnings */}
+    <div className="uv-levels-container">
       <ToastContainer position="top-right" autoClose={5000} />
       
-      {/* Current location weather information */}
-      <Title level={2}>Current Location Weather</Title>
-      {currentLocationData && (
-        <Card style={{ width: 400, margin: "0 auto" }}>
-          <Title level={4}>{currentLocationData.name}</Title>
-          <p>Temperature: {currentLocationData.temperature}</p>
-          <p>Humidity: {currentLocationData.humidity}</p>
-          <p>Weather: {currentLocationData.weather}</p>
-          
-          <div style={{ marginBottom: 16 }}>
-            <p style={{ color: getUvLevelColor(currentUvi), fontWeight: 'bold', marginBottom: 8, fontSize: '16px' }}>
-              UV Index: {currentUvi === null ? "null" : currentUvi} - {getUvLevelText(currentUvi)}
-            </p>
-            <p style={{ fontSize: '14px', backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '4px', color: '#333' }}>
-              {getUvProtectionAdvice(currentUvi)}
-            </p>
-          </div>
-          
-          {/* Safety Timer Section - only for current location */}
-          {currentUvi !== null && currentUvi > 0 && (
-            <div style={{ marginTop: 20, marginBottom: 20, border: '1px solid #f0f0f0', borderRadius: '8px', padding: '15px', backgroundColor: '#fafafa' }}>
-              <Title level={5}>Safe Sun Exposure Timer</Title>
-              <div style={{ marginBottom: 10 }}>
-                <Progress 
-                  type="circle" 
-                  percent={calculateTimePercentage(timeRemaining, currentUvi)} 
-                  format={() => formatTime(timeRemaining)}
-                  strokeColor={getUvLevelColor(currentUvi)}
-                  size={120}
-                />
-              </div>
-              <p style={{ marginTop: '10px', fontWeight: 'bold', color: '#333' }}>
-                Maximum safe time in sun: <span style={{ color: getUvLevelColor(currentUvi) }}>{getSafeExposureTime(currentUvi)} minutes</span>
-              </p>
-              <p style={{ color: '#333' }}>Stay safe in the sun! Seek shade and reapply sunscreen when the timer ends.</p>
-              <Button 
-                type="primary" 
-                onClick={() => resetSafetyTimer(currentUvi)}
-                style={{ marginTop: 10 }}
+      <div className="uv-content-wrapper">
+        {/* Main weather information card */}
+        <Typography.Title level={2} style={{ textAlign: 'center', marginBottom: '30px', marginLeft:'200px' }}>
+          Weather Information
+        </Typography.Title>
+        
+        <Row justify="center" gutter={[16, 16]}>
+          {/* Current Location Card */}
+          <Col xs={24} sm={24} md={22} lg={20} xl={18}>
+            {currentLocationData && (
+              <Card 
+                className="weather-card"
+                style={{ 
+                  width: '100%', 
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.08)', 
+                  borderRadius: '8px',
+                  justifyContent: 'space-around',
+                  margin: '50px',
+                  marginLeft: '100px',
+                }}
               >
-                Reset Timer
-              </Button>
-            </div>
-          )}
-          
-          <Image
-            width={80}
-            src={currentLocationData.icon}
-            alt="weather icon"
-          />
-        </Card>
-      )}
-      
-      {/* City selection area */}
-      <Title level={3} style={{ marginTop: 20 }}>Check City UV Index</Title>
-      <Select
-        style={{ width: 200 }}
-        placeholder="Select City"
-        onChange={handleCityChange}
-        allowClear
-      >
-        {cities.map(city => (
-          <Option key={city.name} value={city.name}>{city.name}</Option>
-        ))}
-      </Select>
-      
-      {/* Selected city information card */}
-      {selectedCity && selectedCityData && (
-        <Card style={{ width: 400, margin: "20px auto" }}>
-          <Title level={4}>{selectedCity.name}</Title>
-          <div>
-            <p style={{ color: getUvLevelColor(selectedCityUvi), fontWeight: 'bold', marginBottom: 8 }}>
-              UV Index: {selectedCityUvi === null ? "null" : selectedCityUvi} - {getUvLevelText(selectedCityUvi)}
-            </p>
-            <p style={{ fontSize: '14px', backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '4px', color: '#333' }}>
-              {getUvProtectionAdvice(selectedCityUvi)}
-            </p>
-          </div>
-        </Card>
-      )}
+                <Typography.Title level={4} style={{ textAlign: 'center' }}>
+                  {currentLocationData.name}
+                </Typography.Title>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                  <Image
+                    width={100}
+                    src={currentLocationData.icon}
+                    alt="weather icon"
+                    preview={false}
+                  />
+                </div>
+                <div className="weather-info" style={{ textAlign: 'center' }}>
+                  <p style={{ fontSize: '16px' }}>Temperature: {currentLocationData.temperature}</p>
+                  <p style={{ fontSize: '16px' }}>Humidity: {currentLocationData.humidity}</p>
+                  <p style={{ fontSize: '16px' }}>Weather: {currentLocationData.weather}</p>
+                </div>
+                
+                <div style={{ margin: '20px 0' }}>
+                  <p style={{ 
+                    color: getUvLevelColor(currentUvi), 
+                    fontWeight: 'bold', 
+                    marginBottom: 12, 
+                    fontSize: '18px',
+                    textAlign: 'center'
+                  }}>
+                    UV Index: {currentUvi === null ? "null" : currentUvi} - {getUvLevelText(currentUvi)}
+                  </p>
+                  <p style={{ 
+                    fontSize: '16px', 
+                    backgroundColor: '#f5f5f5', 
+                    padding: '15px', 
+                    borderRadius: '8px',
+                    color: '#333',
+                    margin: '0 auto',
+                    maxWidth: '90%'
+                  }}>
+                    {getUvProtectionAdvice(currentUvi)}
+                  </p>
+                </div>
+                
+                {/* Safety Timer Section */}
+                {currentUvi !== null && currentUvi > 0 && (
+                  <div className="timer-container">
+                    <Typography.Title level={5} style={{ textAlign: 'center', marginBottom: '20px' }}>
+                      Safe Sun Exposure Timer
+                    </Typography.Title>
+                    
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                      <Progress 
+                        type="circle" 
+                        percent={calculateTimePercentage(timeRemaining, currentUvi)} 
+                        format={() => formatTime(timeRemaining)}
+                        strokeColor={getUvLevelColor(currentUvi)}
+                        size={window.innerWidth < 576 ? 100 : 150}
+                        strokeWidth={8}
+                      />
+                    </div>
+                    
+                    
+                    <p style={{ 
+                      marginTop: '15px', 
+                      fontWeight: 'bold',
+                      color: '#333',
+                      textAlign: 'center',
+                      fontSize: '16px'
+                    }}>
+                      Maximum safe time in sun: <span style={{ color: getUvLevelColor(currentUvi) }}>
+                        {getSafeExposureTime(currentUvi)} minutes
+                      </span>
+                    </p>
+                    
+                    <p style={{ color: '#333', textAlign: 'center' }}>
+                      Stay safe in the sun! Seek shade and reapply sunscreen when the timer ends.
+                    </p>
+                    
+                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
+                      <Button 
+                        type="primary" 
+                        onClick={() => resetSafetyTimer(currentUvi)}
+                        style={{ 
+                          height: '40px', 
+                          padding: '0 25px', 
+                          fontSize: '16px',
+                          borderRadius: '6px'
+                        }}
+                      >
+                        Reset Timer
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </Card>
+            )}
+          </Col>
+        </Row>
+        
+        {/* City selection section */}
+        <div style={{ textAlign: 'center', margin: '30px 0', marginLeft:'200px'}}>
+          <Typography.Title level={3}>Check City UVI</Typography.Title>
+          <Select
+            style={{ width: '100%', maxWidth: '400px' }}
+            placeholder="Select City"
+            onChange={handleCityChange}
+            size="large"
+          >
+            {cities.map(city => (
+              <Option key={city.name} value={city.name}>{city.name}</Option>
+            ))}
+          </Select>
+        </div>
+        
+        {/* Selected city information card */}
+        {selectedCity && selectedCityData && (
+          <Row justify="center" gutter={[16, 16]}>
+            <Col xs={24} sm={24} md={22} lg={20} xl={18}>
+              <Card className="city-card" style={{ 
+                width: '100%',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.08)', 
+                borderRadius: '8px',
+                marginBottom: '30px',
+                marginLeft: '100px'
+              }}>
+                <Typography.Title level={4} style={{ textAlign: 'center' }}>
+                  {selectedCity.name}
+                </Typography.Title>
+                
+                <div style={{ margin: '0 auto', maxWidth: '90%' }}>
+                  <p style={{ 
+                    color: getUvLevelColor(selectedCityUvi), 
+                    fontWeight: 'bold', 
+                    marginBottom: 12, 
+                    fontSize: '18px',
+                    textAlign: 'center'
+                  }}>
+                    UV Index: {selectedCityUvi === null ? "null" : selectedCityUvi} - {getUvLevelText(selectedCityUvi)}
+                  </p>
+                  
+                  <p style={{ 
+                    fontSize: '16px', 
+                    backgroundColor: '#f5f5f5', 
+                    padding: '15px', 
+                    borderRadius: '8px',
+                    color: '#333'
+                  }}>
+                    {getUvProtectionAdvice(selectedCityUvi)}
+                  </p>
+                </div>
+              </Card>
+            </Col>
+          </Row>
+        )}
+      </div>
     </div>
   );
 };
