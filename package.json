@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "antd": "^5.24.3",
+    "react-router-dom": "^7.3.0",
+    "react-toastify": "^11.0.5"
+  }
+}
