@@ -1,24 +1,21 @@
 import './UVLevels'
 import './UVLevels.css'
-import React, { useEffect, useState, useRef } from "react";
-import { Select, Card, Typography, Image, message, Button, Progress, Row, Col } from "antd";
+import React, { useState, useRef, useEffect } from "react";
+import { Card, Typography, Image, message, Button, Progress, Row, Col, Input, Space, Divider } from "antd";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { SearchOutlined } from '@ant-design/icons';
 
-const { Title } = Typography;
-const { Option } = Select;
+const { Title, Text } = Typography;
 
 /**
  * API Configuration Constants
- * API_KEY: OpenWeatherMap API key
  * BASE_URL: Regular weather data API base URL
  * BASE_UVI_URL: UV index data API base URL
  * LAMBDA_API_URL: AWS Lambda function URL for fetching weather and UV index data
  */
-const API_KEY = "65bc8111f58a6ebc65a227d27aa0fdb9";
-const BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
-const BASE_UVI_URL = "https://api.openweathermap.org/data/3.0/onecall";
-const LAMBDA_API_URL = "https://106iftrk39.execute-api.ap-southeast-2.amazonaws.com/getweatheruv"; 
+
+const LAMBDA_API_URL = "https://yol6es3kd3.execute-api.ap-southeast-2.amazonaws.com/getsuburbweatheruv"; 
 
 /**
  * Safe exposure times based on UV index levels (in minutes)
@@ -38,115 +35,123 @@ const UV_SAFETY_TIMES = {
 };
 
 /**
- * Major Australian cities with their geographical coordinates
- * Used for the dropdown selector to allow users to check UV index for specific cities
- */
-const cities = [
-  { name: "Sydney", lat: -33.8688, lon: 151.2093 },
-  { name: "Melbourne", lat: -37.8136, lon: 144.9631 },
-  { name: "Brisbane", lat: -27.4698, lon: 153.0251 },
-  { name: "Perth", lat: -31.9505, lon: 115.8605 },
-  { name: "Adelaide", lat: -34.9285, lon: 138.6007 },
-  { name: "Canberra", lat: -35.2809, lon: 149.1300 },
-  { name: "Darwin", lat: -12.4634, lon: 130.8456 },
-  { name: "Hobart", lat: -42.8821, lon: 147.3272 }
-];
-
-/**
  * UVLevels Component
  * Main functions:
- * 1. Display current location's weather information and UV index
+ * 1. Display searched location's weather information and UV index
  * 2. Provide a safety exposure time countdown based on UV index
- * 3. Allow viewing UV index for major Australian cities
- * 4. Provide sun protection advice based on UV index
+ * 3. Provide sun protection advice based on UV index
  */
 const UVLevels = () => {
-  // State for current location data
-  const [currentLocationData, setCurrentLocationData] = useState(null);
+  // State for displayed weather data
+  const [weatherData, setWeatherData] = useState(null);
   const [currentUvi, setCurrentUvi] = useState(null);
-  
-  // State for selected city data
-  const [selectedCityData, setSelectedCityData] = useState(null);
-  const [selectedCity, setSelectedCity] = useState(null);
-  const [selectedCityUvi, setSelectedCityUvi] = useState(null);
   
   // State for safety timer functionality
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const timerRef = useRef(null);
 
+  // State for suburb search
+  const [searchSuburb, setSearchSuburb] = useState("");
+  const [errorMessage, setErrorMessage] = useState(null);
+
+  // State to track screen size
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  
+  // Update screen width when window resizes
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(window.innerWidth);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
+  // Determine sizes based on screen width
+  const getResponsiveSize = (small, medium, large) => {
+    if (screenWidth < 576) return small;
+    if (screenWidth < 768) return medium;
+    return large;
+  };
+
   /**
    * Fetch weather and UV index data from AWS Lambda API
-   * @param {number} lat - Location latitude
-   * @param {number} lon - Location longitude
-   * @param {boolean} isCurrentLocation - Whether this is for current location or selected city
+   * @param {string} suburb - Suburb name to search
    */
-  const fetchWeatherAndUvi = async (lat, lon, isCurrentLocation = false) => {
+  const fetchWeatherAndUvi = async (suburb) => {
+    if (!suburb || suburb.trim() === "") {
+      message.error("Please enter a valid suburb name");
+      return;
+    }
+
     try {
-      const response = await fetch(`${LAMBDA_API_URL}?lat=${lat}&lon=${lon}`);
-      const data = await response.json();
+      setErrorMessage(null);
       
-      if (data.uvi !== undefined) {
-        // Process UV data
-        let uviValue = null;
-        if (data.uvi !== "No data" && data.uvi !== null) {
-          uviValue = typeof data.uvi === 'number' ? data.uvi : Number(data.uvi);
-        }
-        
-        if (isCurrentLocation) {
-          // Update current location data
-          setCurrentLocationData(data);
-          setCurrentUvi(uviValue);
-          
-          // Only start timer for current location's UV index
-          if (uviValue > 0) {
-            resetSafetyTimer(uviValue);
-          }
-        } else {
-          // Update selected city data
-          setSelectedCityData(data);
-          setSelectedCityUvi(uviValue);
-        }
-      } else {
-        message.error("Failed to retrieve data from API.");
+      const response = await fetch(LAMBDA_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ suburb: suburb.trim() })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrorMessage(data.error || `Request failed with status: ${response.status}`);
+        return;
       }
+
+      if (data.error) {
+        setErrorMessage(data.error);
+        return;
+      }
+
+      // Process UV data
+      let uviValue = null;
+      if (data.uvi !== "No data" && data.uvi !== null && data.uvi !== undefined) {
+        uviValue = typeof data.uvi === 'number' ? data.uvi : Number(data.uvi);
+      }
+      
+      // Create a formatted data object that includes all required fields
+      const formattedData = {
+        name: data.suburb || suburb,
+        icon: data.icon || "",
+        temperature: data.temperature ? `${data.temperature}°C` : "N/A",
+        humidity: data.humidity ? `${data.humidity}%` : "N/A",
+        weather: data.weather || "N/A",
+        uvi: uviValue,
+      };
+      
+      // Update weather data and UV index
+      setWeatherData(formattedData);
+      setCurrentUvi(uviValue);
+      
+      // Reset timer when new location is searched
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        setIsTimerRunning(false);
+      }
+      
+      // Reset time remaining based on new UV value
+      if (uviValue > 0) {
+        setTimeRemaining(getSafeExposureTime(uviValue) * 60);
+        // 自动开始计时器
+        startSafetyTimer(uviValue, formattedData.name);
+      } else {
+        setTimeRemaining(0);
+      }
+      
     } catch (error) {
-      message.error("Failed to fetch data from AWS Lambda.");
+      console.error("API fetch error:", error);
+      setErrorMessage("Failed to fetch data from AWS Lambda.");
     }
   };
 
   /**
-   * Effect hook to get user's current location on component mount
+   * Handle suburb search submit
    */
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        const { latitude, longitude } = position.coords;
-        fetchWeatherAndUvi(latitude, longitude, true);
-      }, (error) => {
-        console.log("Geolocation error:", error.message);
-        message.error("Unable to retrieve your location. Please check permissions or select a city from the dropdown.");
-      }, {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
-      });
-    } else {
-      message.error("Browser does not support geolocation.");
-    }
-  }, []);
-
-  /**
-   * Handle city selection change event
-   * Only updates selected city data when user makes a selection
-   * @param {string} value - Selected city name
-   */
-  const handleCityChange = (value) => {
-    const city = cities.find(city => city.name === value);
-    if (city) {
-      setSelectedCity(city);
-      fetchWeatherAndUvi(city.lat, city.lon, false);
-    }
+  const handleSearchSubmit = () => {
+    fetchWeatherAndUvi(searchSuburb);
   };
 
   /**
@@ -186,7 +191,7 @@ const UVLevels = () => {
    * @returns {string} Text describing UV level
    */
   const getUvLevelText = (uvi) => {
-    if (uvi === null) return "Zero";
+    if (uvi === null) return "No Data";
     if (uvi === 0) return "Zero";
     if (uvi >= 1 && uvi <= 2) return "Low";
     if (uvi >= 3 && uvi <= 5) return "Moderate";
@@ -232,54 +237,61 @@ const UVLevels = () => {
   };
 
   /**
-   * Reset and start safety exposure time countdown based on current UV index
+   * Start safety exposure time countdown based on current UV index
    * Functions:
    * 1. Clear any existing timer
    * 2. Calculate safe time based on current UV index
-   * 3. Set initial countdown value (converted to seconds)
-   * 4. Display timer start notification
-   * 5. Start countdown timer
-   * 6. Display warning notification when countdown ends
-   * @param {number} currentUvi - Current UV index value
+   * 3. Start countdown timer
+   * 4. Display warning notification when countdown ends
    */
-  const resetSafetyTimer = (currentUvi) => {
+  const startSafetyTimer = (uvi = currentUvi, locationName = weatherData?.name) => {
     // Clear any existing timer
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
     
-    // Calculate safe exposure time in minutes
-    const safeTime = getSafeExposureTime(currentUvi);
-    
-    if (safeTime > 0) {
-      // Set initial time in seconds
-      setTimeRemaining(safeTime * 60);
-      setIsTimerRunning(true);
-      
-      // Notify user that timer has started
-      const uvLevel = getUvLevelText(currentUvi);
-      toast.info(`UV Safety Timer started: ${safeTime} minutes for ${uvLevel} UV level`);
-      
-      // Start countdown timer
-      timerRef.current = setInterval(() => {
-        setTimeRemaining(prev => {
-          if (prev <= 1) {
-            // Timer complete
-            clearInterval(timerRef.current);
-            setIsTimerRunning(false);
-            toast.warning(`⚠️ Safe exposure time has ended! Please seek shade and reapply sunscreen.`, {
-              autoClose: 10000, // Stay longer
-              className: 'uv-alert-toast'
-            });
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else {
-      setTimeRemaining(0);
-      setIsTimerRunning(false);
+    // Only start timer if there is a valid UV index
+    if (uvi === null || uvi <= 0) {
+      message.info("No UV radiation detected. Timer not needed.");
+      return;
     }
+    
+    setIsTimerRunning(true);
+    
+    // Notify user that timer has started
+    const uvLevel = getUvLevelText(uvi);
+    const safeTime = getSafeExposureTime(uvi);
+    toast.info(`UV Safety Timer started: ${safeTime} minutes for ${uvLevel} UV level in ${locationName}`);
+    
+    // Start countdown timer
+    timerRef.current = setInterval(() => {
+      setTimeRemaining(prev => {
+        if (prev <= 1) {
+          // Timer complete
+          clearInterval(timerRef.current);
+          setIsTimerRunning(false);
+          toast.warning(`⚠️ Safe exposure time has ended! Please seek shade and reapply sunscreen.`, {
+            autoClose: 10000, // Stay longer
+            className: 'uv-alert-toast'
+          });
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  /**
+   * Reset safety timer to initial value but don't start it
+   */
+  const resetSafetyTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    
+    const safeTime = getSafeExposureTime(currentUvi);
+    setTimeRemaining(safeTime * 60);
+    setIsTimerRunning(false);
   };
 
   /**
@@ -303,14 +315,11 @@ const UVLevels = () => {
    */
   const calculateTimePercentage = (current, uvi) => {
     const totalSeconds = getSafeExposureTime(uvi) * 60;
-    return (current / totalSeconds) * 100;
+    return totalSeconds > 0 ? (current / totalSeconds) * 100 : 0;
   };
 
-  /**
-   * Clean up timer when component unmounts to prevent memory leaks
-   * Uses useEffect cleanup function to ensure cleanup when component leaves DOM
-   */
-  useEffect(() => {
+  // Clean up timer when component unmounts
+  React.useEffect(() => {
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
@@ -320,181 +329,260 @@ const UVLevels = () => {
 
   // Component rendering section
   return (
-    <div className="uv-levels-container">
+    <div className="uv-levels-container" style={{ 
+      width: '100%',
+      display: 'flex', 
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      padding: '0',
+      margin: '0 auto',
+      boxSizing: 'border-box',
+      paddingTop: '60px',
+      marginLeft: '250px',
+    }}>
       <ToastContainer position="top-right" autoClose={5000} />
       
-      <div className="uv-content-wrapper">
-        {/* Main weather information card */}
-        <Typography.Title level={2} style={{ textAlign: 'center', marginBottom: '30px', marginLeft:'200px' }}>
-          Weather Information
-        </Typography.Title>
-        
-        <Row justify="center" gutter={[16, 16]}>
-          {/* Current Location Card */}
-          <Col xs={24} sm={24} md={22} lg={20} xl={18}>
-            {currentLocationData && (
-              <Card 
-                className="weather-card"
+      <div style={{ 
+        width: '100%',
+        maxWidth: '800px',
+        padding: '0 20px',
+        margin: '0 auto',
+        boxSizing: 'border-box'
+      }}>
+        <div style={{ textAlign: 'center', width: '100%' }}>
+          {/* Main weather information card */}
+          <Typography.Title level={2} style={{ 
+            textAlign: 'center', 
+            margin: '30px 0 20px 0',
+            padding: '0',
+            width: '100%'
+          }}>
+            Weather Information
+          </Typography.Title>
+          
+          {/* Suburb search section - Enter Australian suburb to search for UV data */}
+          <div style={{ 
+            textAlign: 'center', 
+            marginBottom: '30px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '15px',
+            width: '100%'
+          }}>
+            <Text strong style={{ 
+              fontSize: '16px', 
+              marginBottom: '5px'
+            }}>
+              Please enter an Australian suburb
+            </Text>
+            
+            {/* Responsive search input and button */}
+            <Space direction={screenWidth < 576 ? "vertical" : "horizontal"} size="large" style={{ 
+              display: 'flex', 
+              flexWrap: 'wrap', 
+              justifyContent: 'center',
+              width: screenWidth < 576 ? '100%' : 'auto'
+            }}>
+              <Input 
+                prefix={<SearchOutlined style={{ color: '#1890ff' }} />}
+                placeholder="Enter suburb (e.g., Melbourne)" 
+                value={searchSuburb} 
+                onChange={(e) => setSearchSuburb(e.target.value)} 
                 style={{ 
-                  width: '100%', 
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.08)', 
-                  borderRadius: '8px',
-                  justifyContent: 'space-around',
-                  margin: '50px',
-                  marginLeft: '100px',
+                  width: screenWidth < 576 ? '100%' : '300px',
+                  borderRadius: '6px',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+                  height: '40px'
+                }} 
+                onPressEnter={handleSearchSubmit}
+              />
+              <Button 
+                type="primary" 
+                icon={<SearchOutlined />}
+                onClick={handleSearchSubmit}
+                size="large"
+                style={{
+                  borderRadius: '6px',
+                  height: '40px',
+                  boxShadow: '0 2px 6px rgba(24,144,255,0.2)',
+                  width: screenWidth < 576 ? '100%' : 'auto'
                 }}
               >
-                <Typography.Title level={4} style={{ textAlign: 'center' }}>
-                  {currentLocationData.name}
-                </Typography.Title>
+                Get Weather
+              </Button>
+            </Space>
+          </div>
+
+          {/* Error message display */}
+          {errorMessage && (
+            <div style={{ 
+              textAlign: "center", 
+              color: "red", 
+              marginBottom: "20px",
+              width: '100%'
+            }}>
+              {errorMessage}
+            </div>
+          )}
+          
+          {/* Weather Card - Responsive layout */}
+          {weatherData && (
+            <Card 
+              className="weather-card"
+              style={{ 
+                width: '100%', 
+                boxShadow: '0 4px 12px rgba(0,0,0,0.08)', 
+                borderRadius: '8px',
+                margin: '0 auto 20px auto',
+                padding: screenWidth < 576 ? '15px 10px' : screenWidth < 768 ? '20px 15px' : '20px'
+              }}
+            >
+              <Typography.Title level={4} style={{ textAlign: 'center' }}>
+                {weatherData.name}
+              </Typography.Title>
+              {weatherData.icon && (
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
                   <Image
-                    width={100}
-                    src={currentLocationData.icon}
+                    width={getResponsiveSize(80, 90, 100)}
+                    src={weatherData.icon}
                     alt="weather icon"
                     preview={false}
                   />
                 </div>
-                <div className="weather-info" style={{ textAlign: 'center' }}>
-                  <p style={{ fontSize: '16px' }}>Temperature: {currentLocationData.temperature}</p>
-                  <p style={{ fontSize: '16px' }}>Humidity: {currentLocationData.humidity}</p>
-                  <p style={{ fontSize: '16px' }}>Weather: {currentLocationData.weather}</p>
+              )}
+              <div className="weather-info" style={{ textAlign: 'center' }}>
+                <p style={{ fontSize: getResponsiveSize('14px', '15px', '16px') }}>Temperature: {weatherData.temperature}</p>
+                <p style={{ fontSize: getResponsiveSize('14px', '15px', '16px') }}>Humidity: {weatherData.humidity}</p>
+                <p style={{ fontSize: getResponsiveSize('14px', '15px', '16px') }}>Weather: {weatherData.weather}</p>
+              </div>
+              
+              <div style={{ margin: '20px 0' }}>
+                <p style={{ 
+                  color: getUvLevelColor(currentUvi), 
+                  fontWeight: 'bold', 
+                  marginBottom: 12, 
+                  fontSize: getResponsiveSize('16px', '17px', '18px'),
+                  textAlign: 'center'
+                }}>
+                  UV Index: {currentUvi === null ? "N/A" : currentUvi} - {getUvLevelText(currentUvi)}
+                </p>
+                <p style={{ 
+                  fontSize: getResponsiveSize('14px', '15px', '16px'), 
+                  backgroundColor: '#f5f5f5', 
+                  padding: getResponsiveSize('10px', '12px', '15px'), 
+                  borderRadius: '8px',
+                  color: '#333',
+                  margin: '0 auto',
+                  maxWidth: '100%'
+                }}>
+                  {getUvProtectionAdvice(currentUvi)}
+                </p>
+              </div>
+              
+              {/* Safety Timer Section - Always display */}
+              <div className="timer-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Typography.Title level={5} style={{ textAlign: 'center', marginBottom: '20px' }}>
+                  Safe Sun Exposure Timer
+                </Typography.Title>
+                
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                  <Progress 
+                    type="circle" 
+                    percent={calculateTimePercentage(timeRemaining, currentUvi)} 
+                    format={() => currentUvi !== null && currentUvi > 0 ? formatTime(timeRemaining) : "N/A"}
+                    strokeColor={getUvLevelColor(currentUvi || 0)}
+                    size={getResponsiveSize(100, 120, 150)}
+                    strokeWidth={8}
+                    status={currentUvi !== null && currentUvi > 0 ? "normal" : "exception"}
+                  />
                 </div>
                 
-                <div style={{ margin: '20px 0' }}>
-                  <p style={{ 
-                    color: getUvLevelColor(currentUvi), 
-                    fontWeight: 'bold', 
-                    marginBottom: 12, 
-                    fontSize: '18px',
-                    textAlign: 'center'
-                  }}>
-                    UV Index: {currentUvi === null ? "null" : currentUvi} - {getUvLevelText(currentUvi)}
-                  </p>
-                  <p style={{ 
-                    fontSize: '16px', 
-                    backgroundColor: '#f5f5f5', 
-                    padding: '15px', 
-                    borderRadius: '8px',
-                    color: '#333',
-                    margin: '0 auto',
-                    maxWidth: '90%'
-                  }}>
-                    {getUvProtectionAdvice(currentUvi)}
-                  </p>
-                </div>
-                
-                {/* Safety Timer Section */}
-                {currentUvi !== null && currentUvi > 0 && (
-                  <div className="timer-container">
-                    <Typography.Title level={5} style={{ textAlign: 'center', marginBottom: '20px' }}>
-                      Safe Sun Exposure Timer
-                    </Typography.Title>
-                    
-                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-                      <Progress 
-                        type="circle" 
-                        percent={calculateTimePercentage(timeRemaining, currentUvi)} 
-                        format={() => formatTime(timeRemaining)}
-                        strokeColor={getUvLevelColor(currentUvi)}
-                        size={window.innerWidth < 576 ? 100 : 150}
-                        strokeWidth={8}
-                      />
-                    </div>
-                    
-                    
-                    <p style={{ 
-                      marginTop: '15px', 
-                      fontWeight: 'bold',
-                      color: '#333',
-                      textAlign: 'center',
-                      fontSize: '16px'
-                    }}>
+                <p style={{ 
+                  marginTop: '15px', 
+                  fontWeight: 'bold',
+                  color: '#333',
+                  textAlign: 'center',
+                  fontSize: getResponsiveSize('14px', '15px', '16px'),
+                  width: '100%',
+                  padding: '0 10px'
+                }}>
+                  {currentUvi !== null && currentUvi > 0 ? (
+                    <>
                       Maximum safe time in sun: <span style={{ color: getUvLevelColor(currentUvi) }}>
                         {getSafeExposureTime(currentUvi)} minutes
                       </span>
-                    </p>
-                    
-                    <p style={{ color: '#333', textAlign: 'center' }}>
-                      Stay safe in the sun! Seek shade and reapply sunscreen when the timer ends.
-                    </p>
-                    
-                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
-                      <Button 
-                        type="primary" 
-                        onClick={() => resetSafetyTimer(currentUvi)}
-                        style={{ 
-                          height: '40px', 
-                          padding: '0 25px', 
-                          fontSize: '16px',
-                          borderRadius: '6px'
-                        }}
-                      >
-                        Reset Timer
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </Card>
-            )}
-          </Col>
-        </Row>
-        
-        {/* City selection section */}
-        <div style={{ textAlign: 'center', margin: '30px 0', marginLeft:'200px'}}>
-          <Typography.Title level={3}>Check City UVI</Typography.Title>
-          <Select
-            style={{ width: '100%', maxWidth: '400px' }}
-            placeholder="Select City"
-            onChange={handleCityChange}
-            size="large"
-          >
-            {cities.map(city => (
-              <Option key={city.name} value={city.name}>{city.name}</Option>
-            ))}
-          </Select>
-        </div>
-        
-        {/* Selected city information card */}
-        {selectedCity && selectedCityData && (
-          <Row justify="center" gutter={[16, 16]}>
-            <Col xs={24} sm={24} md={22} lg={20} xl={18}>
-              <Card className="city-card" style={{ 
-                width: '100%',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.08)', 
-                borderRadius: '8px',
-                marginBottom: '30px',
-                marginLeft: '100px'
-              }}>
-                <Typography.Title level={4} style={{ textAlign: 'center' }}>
-                  {selectedCity.name}
-                </Typography.Title>
+                    </>
+                  ) : (
+                    <span style={{ color: "#cccccc" }}>
+                      No UV radiation detected, timer not needed
+                    </span>
+                  )}
+                </p>
                 
-                <div style={{ margin: '0 auto', maxWidth: '90%' }}>
-                  <p style={{ 
-                    color: getUvLevelColor(selectedCityUvi), 
-                    fontWeight: 'bold', 
-                    marginBottom: 12, 
-                    fontSize: '18px',
-                    textAlign: 'center'
-                  }}>
-                    UV Index: {selectedCityUvi === null ? "null" : selectedCityUvi} - {getUvLevelText(selectedCityUvi)}
-                  </p>
-                  
-                  <p style={{ 
-                    fontSize: '16px', 
-                    backgroundColor: '#f5f5f5', 
-                    padding: '15px', 
-                    borderRadius: '8px',
-                    color: '#333'
-                  }}>
-                    {getUvProtectionAdvice(selectedCityUvi)}
-                  </p>
+                <p style={{ 
+                  color: '#333', 
+                  textAlign: 'center',
+                  fontSize: getResponsiveSize('14px', '15px', '16px'),
+                  padding: '0 10px',
+                  width: '100%'
+                }}>
+                  {currentUvi !== null && currentUvi > 0 ? 
+                    "Stay safe in the sun! Seek shade and reapply sunscreen when the timer ends." :
+                    "No UV protection currently needed. Check back later when UV levels increase."}
+                </p>
+                
+                {/* Responsive button layout */}
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  gap: getResponsiveSize('10px', '12px', '15px'), 
+                  marginTop: '15px',
+                  flexDirection: screenWidth < 576 ? 'column' : 'row',
+                  alignItems: 'center',
+                  width: '100%',
+                  maxWidth: '400px'
+                }}>
+                  {isTimerRunning ? (
+                    <Button 
+                      danger
+                      onClick={() => {
+                        if (timerRef.current) {
+                          clearInterval(timerRef.current);
+                          setIsTimerRunning(false);
+                        }
+                      }}
+                      style={{ 
+                        height: '40px', 
+                        padding: '0 25px', 
+                        fontSize: getResponsiveSize('14px', '15px', '16px'),
+                        borderRadius: '6px',
+                        width: screenWidth < 576 ? '100%' : 'auto'
+                      }}
+                    >
+                      Stop Timer
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={resetSafetyTimer}
+                      disabled={currentUvi === null || currentUvi <= 0}
+                      style={{ 
+                        height: '40px', 
+                        padding: '0 25px', 
+                        fontSize: getResponsiveSize('14px', '15px', '16px'),
+                        borderRadius: '6px',
+                        width: screenWidth < 576 ? '100%' : 'auto'
+                      }}
+                    >
+                      Reset Timer
+                    </Button>
+                  )}
                 </div>
-              </Card>
-            </Col>
-          </Row>
-        )}
+              </div>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   );

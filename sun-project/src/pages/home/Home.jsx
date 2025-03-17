@@ -10,13 +10,10 @@ const Home = () => {
     <div>
       <section className="home">
         <div className="home-content">
-          <h1>Think You're Too Young for Skin Cancer?</h1>
+          <h1>Victoria ranks <span style={{ color: 'orange' }}>3rd in melanoma skin cancer</span> rates nationwide</h1>
           <h2>
-            <span>Think Again!</span>
+            <span>Skin canceris preventable, stay sun-safeand cetreqular check-ups.</span>
           </h2>
-          <p>
-            Every moment under the sun adds up. With some of the <strong>highest UV levels</strong> in the world, Australia faces a skin cancer crisis, and young adults are at serious risk—even if you don’t see the damage yet.
-          </p>
           <button className="cta-button">Protect your skin today</button>
         </div>
 

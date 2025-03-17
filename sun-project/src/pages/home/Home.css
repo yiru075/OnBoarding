@@ -23,7 +23,7 @@
   .home-content h2 {
     font-size: 28px;
     font-weight: bold;
-    color: orange;
+    color: rgb(127, 120, 108);
     margin-bottom: 15px;
   }
   
@@ -61,4 +61,6 @@
     z-index: 2;
   }
 
-
+.span {
+    color: orange;
+}
