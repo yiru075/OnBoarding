@@ -14,7 +14,7 @@ const Heatmap = () => {
           insights for researchers, businesses, and policymakers.
         </p>
 
-        <ul className="heatmap-list">
+        <ul className="heatmap-list" style={{ color: "black" }}>
           <li>
             <FaCheckCircle className="check-icon" />
             100% Free Heatmap Tool to Visualize Key Data Across Australia
