@@ -18,7 +18,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/uv-levels" element={<UVLevels />} />
         <Route path="/personalized-plan" element={<PersonalizedPlan />} />
-        <Route path="/sunscreen-reminder" element={<SunscreenReminder />} />
+        {/* <Route path="/sunscreen-reminder" element={<SunscreenReminder />} /> */}
         <Route path="/sun-safe-clothing" element={<SunSafeClothing />} />
       </Routes>
       <Footer />

@@ -1,0 +1,158 @@
+.personalized-plan-container {
+  padding: 20px;
+  width: 100%;
+  margin: 0;
+  background-color: #ffffff;
+  padding-top: 120px; /* Increased to provide more space below the header */
+  min-height: calc(100vh - 64px - 50px); /* Subtract header and footer height */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.plan-content-wrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 20px; /* Add extra padding at the top */
+}
+
+.plan-card {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border-radius: 8px;
+  margin: 20px 50px 50px 100px; /* Adjust margin to move card down */
+  width: 100%;
+  max-width: 90%;
+}
+
+.uv-info-section,
+.skin-type-section,
+.sunscreen-recommendation {
+  margin-bottom: 32px;
+  text-align: center;
+  padding: 20px;
+}
+
+.uv-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.sunscreen-amount {
+  margin: 24px 0;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.recommendation-tips {
+  text-align: left;
+  margin-top: 24px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.recommendation-tips ul {
+  margin-top: 12px;
+  padding-left: 20px;
+}
+
+.recommendation-tips li {
+  margin-bottom: 8px;
+  color: #666;
+}
+
+.ant-select {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.ant-progress-circle {
+  margin-bottom: 16px;
+}
+
+/* Extra large screens - 4K displays */
+@media (min-width: 2560px) {
+  .plan-content-wrapper {
+    max-width: 1800px;
+  }
+}
+
+/* Large screens - 1080p and 2K displays */
+@media (min-width: 1920px) and (max-width: 2559px) {
+  .plan-content-wrapper {
+    max-width: 1600px;
+  }
+}
+
+/* Larger screens */
+@media (min-width: 1440px) and (max-width: 1919px) {
+  .plan-content-wrapper {
+    max-width: 1350px;
+  }
+}
+
+/* Standard large screens */
+@media (min-width: 1200px) and (max-width: 1439px) {
+  .plan-content-wrapper {
+    max-width: 1150px;
+  }
+}
+
+/* Medium screens */
+@media (max-width: 1199px) and (min-width: 768px) {
+  .plan-content-wrapper {
+    max-width: 90%;
+  }
+}
+
+/* Tablet devices */
+@media (max-width: 767px) and (min-width: 576px) {
+  .personalized-plan-container {
+    padding: 15px;
+    padding-top: 70px;
+  }
+  
+  .plan-content-wrapper {
+    max-width: 95%;
+  }
+
+  .plan-card {
+    margin: 30px;
+    margin-left: 50px;
+  }
+}
+
+/* Mobile devices */
+@media (max-width: 575px) {
+  .personalized-plan-container {
+    padding: 10px;
+    padding-top: 60px;
+  }
+  
+  .plan-content-wrapper {
+    max-width: 100%;
+    padding: 0 5px;
+  }
+
+  .plan-card {
+    margin: 15px;
+    margin-left: 20px;
+  }
+
+  .uv-info-section,
+  .skin-type-section,
+  .sunscreen-recommendation {
+    padding: 10px;
+  }
+
+  .ant-progress-circle {
+    width: 100px !important;
+    height: 100px !important;
+  }
+}

@@ -1,0 +1,170 @@
+@media (max-width: 576px) {
+    .weather-card .ant-card-body {
+      padding: 12px !important;
+    }
+    
+    .weather-info p {
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    .timer-container {
+      padding: 10px !important;
+    }
+  }
+
+/* Responsive styles for UV Levels page */
+.uv-levels-container {
+  padding: 20px;
+  width: 100%;
+  margin: 0;
+  background-color: #ffffff;
+  padding-top: 80px;
+  min-height: calc(100vh - 64px - 50px); /* Subtract header and footer height */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.uv-content-wrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Extra large screens - 4K displays */
+@media (min-width: 2560px) {
+  .uv-content-wrapper {
+    max-width: 1800px;
+  }
+}
+
+/* Large screens - 1080p and 2K displays */
+@media (min-width: 1920px) and (max-width: 2559px) {
+  .uv-content-wrapper {
+    max-width: 1600px;
+  }
+}
+
+/* Larger screens */
+@media (min-width: 1440px) and (max-width: 1919px) {
+  .uv-content-wrapper {
+    max-width: 1350px;
+  }
+}
+
+/* Standard large screens */
+@media (min-width: 1200px) and (max-width: 1439px) {
+  .uv-content-wrapper {
+    max-width: 1150px;
+  }
+}
+
+/* Medium screens */
+@media (max-width: 1199px) and (min-width: 768px) {
+  .uv-content-wrapper {
+    max-width: 90%;
+  }
+}
+
+/* Tablet devices */
+@media (max-width: 767px) and (min-width: 576px) {
+  .uv-levels-container {
+    padding: 15px;
+    padding-top: 70px;
+  }
+  
+  .uv-content-wrapper {
+    max-width: 95%;
+  }
+}
+
+/* Mobile devices */
+@media (max-width: 575px) {
+  .uv-levels-container {
+    padding: 10px;
+    padding-top: 60px;
+  }
+  
+  .uv-content-wrapper {
+    max-width: 100%;
+    padding: 0 5px;
+  }
+}
+
+/* Card style optimization - Large screens */
+@media (min-width: 1440px) {
+  .weather-card, .city-card {
+    max-width: 95%;
+    margin: 0 auto;
+  }
+  
+  .timer-container {
+    max-width: 85%;
+  }
+  
+  /* Increase font size for large screens */
+  .weather-info p {
+    font-size: 18px;
+  }
+  
+  .uv-levels-container .ant-typography {
+    font-size: 110%;
+  }
+}
+
+/* Card style responsive adjustments */
+@media (max-width: 767px) {
+  .weather-card .ant-card-body {
+    padding: 15px 10px;
+  }
+  
+  /* Reduce page title font size on small screens */
+  .uv-levels-container .ant-typography {
+    font-size: 90%;
+  }
+}
+
+/* Timer container styles */
+.timer-container {
+  margin: 25px auto;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 20px;
+  background-color: #fafafa;
+  max-width: 90%;
+}
+
+/* Responsive card styles */
+.weather-card, .city-card {
+  transition: all 0.3s ease;
+}
+
+/* Responsive adjustments - Tablet and mobile devices */
+@media (max-width: 767px) {
+  .timer-container {
+    padding: 15px 10px;
+    max-width: 100%;
+  }
+  
+  .weather-card .ant-typography,
+  .city-card .ant-typography {
+    margin-bottom: 15px !important;
+  }
+}
+
+/* Mobile devices - Smaller spacing */
+@media (max-width: 575px) {
+  .timer-container {
+    padding: 10px 5px;
+    margin: 15px auto;
+    border-radius: 8px;
+  }
+  
+  .uv-levels-container .ant-progress-circle {
+    width: 100px !important;
+    height: 100px !important;
+  }
+}
