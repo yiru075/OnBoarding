@@ -7,22 +7,22 @@ const features = [
   {
     icon: <FaTshirt className="feature-icon" />,
     title: "Clothing Recommendations",
-    description: "Check the disease so you can easily choose the right specialist.",
+    description: "Check the clothing suggestion to keep you safe under the sun exposure.",
   },
   {
     icon: <FaSun className="feature-icon" />,
     title: "Heat and UV Trends",
-    description: "Choose a specialist according to your disease complaints.",
+    description: "Know what the UV index is before going outdoors.",
   },
   {
     icon: <FaCalendarCheck className="feature-icon" />,
     title: "Your Sun Safety Plan",
-    description: "Make a schedule with the doctor concerned so you can start the examination.",
+    description: "Equip a better understanding of your skin and get a right way to protect.",
   },
   {
     icon: <FaStar className="feature-icon" />,
     title: "UV & Health Insights",
-    description: "After conducting an examination with a specialist we can help find the right healing method.",
+    description: "Advices and resources from specialists.",
   }
 ];
 
