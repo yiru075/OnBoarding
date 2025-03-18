@@ -30,7 +30,7 @@ const Heatmap = () => {
       </div>
 
       <div className="heatmap-image">
-        <img src={heatmapImage} alt="Australia Heatmap" />
+        <img src={melanomaImage} alt="Australia Heatmap" />
       </div>
     </section>
   );
