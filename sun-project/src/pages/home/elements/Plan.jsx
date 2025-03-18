@@ -29,7 +29,7 @@ const Plan = () => {
           </li>
         </ul>
 
-        <button className="plan-button">Get your personalized sun-safety plan now</button>
+        {/* <button className="plan-button">Get your personalized sun-safety plan now</button> */}
       </div>
     </section>
   );

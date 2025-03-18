@@ -14,7 +14,7 @@ const Home = () => {
           <h2>
             <span>Skin cancer is preventable, stay sun-safe and get regular check-ups.</span>
           </h2>
-          <button className="cta-button">Protect your skin today</button>
+          {/* <button className="cta-button">Protect your skin today</button> */}
         </div>
 
         <div className="home-image">

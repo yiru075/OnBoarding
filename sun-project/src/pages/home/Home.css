@@ -2,29 +2,29 @@
     display: flex;
     align-items: center;
     justify-content: space-between; 
-    padding: 80px 100px;
+    padding: 5vw 8vw; /* Use vw for responsive padding */
     background-color: white;
-    max-width: 1200px;
+    max-width: 100%; /* Allow full width */
     margin: 0 auto; 
 }
   
   
   .home-content {
     flex: 1; 
-    max-width: 50%;
+    max-width: 100%; /* Allow full width on smaller screens */
   }
   
   .home-content h1 {
-    font-size: 36px;
+    font-size: 3vw; /* Use vw for responsive font size */
     font-weight: bold;
     color: black;
   }
   
   .home-content h2 {
-    font-size: 28px;
+    font-size: 2.5vw; /* Use vw for responsive font size */
     font-weight: bold;
     color: rgb(127, 120, 108);
-    margin-bottom: 15px;
+    margin-bottom: 1vw;
   }
   
   .home-content p {
@@ -37,8 +37,8 @@
   .cta-button {
     background-color: orange;
     color: white;
-    padding: 12px 20px;
-    font-size: 16px;
+    padding: 1vw 2vw; /* Use vw for responsive padding */
+    font-size: 1.5vw; /* Use vw for responsive font size */
     border: none;
     border-radius: 5px;
   }
@@ -50,12 +50,12 @@
     justify-content: center;
     align-items: center;
     position: relative;
-    max-width: 50%;
+    max-width: 100%; /* Allow full width on smaller screens */
   }
   
   .home-image img {
     width: 100%; 
-    max-width: 400px;
+    max-width: 100%; /* Allow full width on smaller screens */
     border-radius: 10px;
     position: relative;
     z-index: 2;
@@ -63,4 +63,19 @@
 
 .span {
     color: orange;
+}
+
+@media (max-width: 768px) {
+    .home {
+        flex-direction: column; /* Stack elements vertically on smaller screens */
+        padding: 10vw 5vw;
+    }
+
+    .home-content h1, .home-content h2 {
+        text-align: center; /* Center text on smaller screens */
+    }
+
+    .cta-button {
+        margin: 2vw auto; /* Center button on smaller screens */
+    }
 }
