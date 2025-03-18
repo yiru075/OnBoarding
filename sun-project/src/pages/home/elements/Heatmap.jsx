@@ -1,6 +1,7 @@
 import React from "react"
 import "./Heatmap.css"
 import { FaCheckCircle } from "react-icons/fa"
+import melanomaImage from "./Melanoma.png"
 
 const Heatmap = () => {
   return (
@@ -29,7 +30,7 @@ const Heatmap = () => {
       </div>
 
       <div className="heatmap-image">
-        {/* <img src={heatmapImage} alt="Australia Heatmap" /> */}
+        <img src={heatmapImage} alt="Australia Heatmap" />
       </div>
     </section>
   );
