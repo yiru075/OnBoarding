@@ -12,7 +12,7 @@ const Home = () => {
         <div className="home-content">
           <h1>Victoria ranks <span style={{ color: 'orange' }}>3rd in melanoma skin cancer</span> rates nationwide</h1>
           <h2>
-            <span>Skin canceris preventable, stay sun-safeand cetreqular check-ups.</span>
+            <span>Skin cancer is preventable, stay sun-safe and get regular check-ups.</span>
           </h2>
           <button className="cta-button">Protect your skin today</button>
         </div>
