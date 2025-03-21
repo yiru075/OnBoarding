@@ -23,7 +23,7 @@ const Home = () => {
         </div>
       </section>
       <Features />
-      {/* <Heatmap /> */}
+      <Heatmap />
       <Plan />
     </div>
   );

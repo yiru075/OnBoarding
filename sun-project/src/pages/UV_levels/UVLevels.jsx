@@ -737,3 +737,197 @@ const UVLevels = () => {
 };
 
 export default UVLevels;
+
+
+// 完整的前端 UVLevels 组件代码，使用 Mapbox 联想输入替代 Select 列表
+
+// import React, { useState, useRef, useEffect } from "react";
+// import {
+//   Card, Typography, Image, message, Button, Progress, Select
+// } from "antd";
+// import { toast, ToastContainer } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+// import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+// import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
+
+// const { Title, Text } = Typography;
+// const { Option } = Select;
+
+// const LAMBDA_API_URL = "https://yol6es3kd3.execute-api.ap-southeast-2.amazonaws.com/getsuburbweatheruv";
+
+// const UV_SAFETY_TIMES = {
+//   low: 60,
+//   moderate: 45,
+//   high: 25,
+//   veryHigh: 15,
+//   extreme: 10
+// };
+
+// const UVLevels = () => {
+//   const [weatherData, setWeatherData] = useState(null);
+//   const [currentUvi, setCurrentUvi] = useState(null);
+//   const [timeRemaining, setTimeRemaining] = useState(0);
+//   const [isTimerRunning, setIsTimerRunning] = useState(false);
+//   const timerRef = useRef(null);
+
+//   const [selectedSuburb, setSelectedSuburb] = useState('');
+//   const [selectedCoords, setSelectedCoords] = useState(null);
+//   const [errorMessage, setErrorMessage] = useState(null);
+
+//   const geocoderContainerRef = useRef(null);
+
+//   useEffect(() => {
+//     if (!geocoderContainerRef.current || geocoderContainerRef.current.children.length > 0) {
+//       return; // 避免重复渲染
+//     }
+    
+//     const geocoder = new MapboxGeocoder({
+//       accessToken: 'pk.eyJ1IjoieWlydS0wNyIsImEiOiJjbThpNzhybmIwOXJwMmxxOXQ3c3k5d3J4In0.xYbGRrpTYvMvrpX0gUA_JA',
+//       types: 'place,locality',
+//       countries: 'au',
+//       placeholder: 'Enter Australian suburb',
+//       marker: false,
+//       flyTo: false
+//     });
+
+//     if (geocoderContainerRef.current) {
+//       geocoder.addTo(geocoderContainerRef.current);
+//     }
+
+//     geocoder.on('result', (e) => {
+//       const place = e.result;
+//       const suburb = place.text;
+//       const coords = place.center;
+
+//       setSelectedSuburb(suburb);
+//       setSelectedCoords({ lat: coords[1], lon: coords[0] });
+
+//       fetchWeatherAndUviWithCoords(suburb, coords[1], coords[0]);
+//     });
+
+//     return () => geocoder.clear();
+//   }, []);
+
+//   const getSafeExposureTime = (uvi) => {
+//     if (uvi === null || uvi === 0) return 0;
+//     if (uvi >= 1 && uvi <= 2) return UV_SAFETY_TIMES.low;
+//     if (uvi >= 3 && uvi <= 5) return UV_SAFETY_TIMES.moderate;
+//     if (uvi >= 6 && uvi <= 7) return UV_SAFETY_TIMES.high;
+//     if (uvi >= 8 && uvi <= 10) return UV_SAFETY_TIMES.veryHigh;
+//     return UV_SAFETY_TIMES.extreme;
+//   };
+
+//   const fetchWeatherAndUviWithCoords = async (suburb, lat, lon) => {
+//     try {
+//       const response = await fetch(LAMBDA_API_URL, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ suburb, lat, lon })
+//       });
+
+//       const data = await response.json();
+
+//       if (!response.ok || data.error) {
+//         setErrorMessage(data.error || "Failed to get data");
+//         return;
+//       }
+
+//       const uviValue = data.uvi ? Math.round(Number(data.uvi)) : null;
+
+//       setWeatherData({
+//         name: suburb,
+//         icon: data.icon,
+//         temperature: data.temperature + '°C',
+//         humidity: data.humidity + '%',
+//         weather: data.weather,
+//         uvi: uviValue
+//       });
+
+//       setCurrentUvi(uviValue);
+//       setTimeRemaining(getSafeExposureTime(uviValue) * 60);
+//       startSafetyTimer(uviValue, suburb);
+
+//     } catch (err) {
+//       console.error("Error:", err);
+//       setErrorMessage("Request failed.");
+//     }
+//   };
+
+//   const startSafetyTimer = (uvi, location) => {
+//     if (timerRef.current) clearInterval(timerRef.current);
+//     if (!uvi || uvi <= 0) return;
+
+//     toast.info(`Timer started for ${location}: ${getSafeExposureTime(uvi)} minutes`);
+//     setIsTimerRunning(true);
+
+//     timerRef.current = setInterval(() => {
+//       setTimeRemaining(prev => {
+//         if (prev <= 1) {
+//           clearInterval(timerRef.current);
+//           setIsTimerRunning(false);
+//           toast.warning("⚠️ Safe exposure time ended!");
+//           return 0;
+//         }
+//         return prev - 1;
+//       });
+//     }, 1000);
+//   };
+
+//   const getUvLevelText = (uvi) => {
+//     if (uvi === null) return "No Data";
+//     if (uvi === 0) return "Zero";
+//     if (uvi <= 2) return "Low";
+//     if (uvi <= 5) return "Moderate";
+//     if (uvi <= 7) return "High";
+//     if (uvi <= 10) return "Very High";
+//     return "Extreme";
+//   };
+
+//   const formatTime = (sec) => {
+//     const m = Math.floor(sec / 60);
+//     const s = sec % 60;
+//     return `${m}:${s < 10 ? '0' : ''}${s}`;
+//   };
+
+//   return (
+//     <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+//       <ToastContainer />
+
+//       <Title level={3}>UV & Weather Info</Title>
+
+//       <div ref={geocoderContainerRef} style={{ marginBottom: '20px' }}></div>
+
+//       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+
+//       {weatherData && (
+//         <Card>
+//           <Title level={4}>{weatherData.name}</Title>
+//           {weatherData.icon && <Image src={weatherData.icon} width={80} preview={false} />}
+//           <p>Temperature: {weatherData.temperature}</p>
+//           <p>Humidity: {weatherData.humidity}</p>
+//           <p>Condition: {weatherData.weather}</p>
+//           <p>UV Index: {currentUvi} ({getUvLevelText(currentUvi)})</p>
+//           <p>Safe exposure time: {getSafeExposureTime(currentUvi)} minutes</p>
+
+//           {currentUvi > 0 && (
+//             <>
+//               <Progress
+//                 type="circle"
+//                 percent={(timeRemaining / (getSafeExposureTime(currentUvi) * 60)) * 100}
+//                 format={() => formatTime(timeRemaining)}
+//               />
+//               <Button danger onClick={() => {
+//                 clearInterval(timerRef.current);
+//                 setIsTimerRunning(false);
+//               }} style={{ marginTop: '10px' }}>
+//                 Stop Timer
+//               </Button>
+//             </>
+//           )}
+//         </Card>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default UVLevels;
